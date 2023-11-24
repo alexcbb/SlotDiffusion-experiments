@@ -136,7 +136,7 @@ class LDMDINO(CondDDPM):
     def __init__(
         self,
         resolution,
-        vae_dict,
+        dino_dict,
         unet_dict,
         use_ema=True,
         diffusion_dict=dict(
@@ -152,7 +152,6 @@ class LDMDINO(CondDDPM):
         conditioning_key='crossattn',  # 'concat'
         cond_stage_key='slots',
     ):
-        vae_dict['scale_factor'] = diffusion_dict.pop('z_scale_factor', 1.)
         super().__init__(
             resolution=resolution,
             unet_dict=unet_dict,
@@ -162,20 +161,17 @@ class LDMDINO(CondDDPM):
             cond_stage_key=cond_stage_key,
         )
 
-        vae_type = vae_dict.pop('vae_type')
-        assert vae_type == 'VQVAE', f'VAE type {vae_type} not implemented.'
-        from ..vqvae import VQVAEWrapper
-        self.vae = VQVAEWrapper(**vae_dict)
+        self.dino = DINO(**dino_dict)# VQVAEWrapper(**vae_dict)
 
         self.clip_denoised = False  # latent features are unbounded values
         self.vq_denoised = True  # LDM uses this by default
 
     def loss_function(self, data_dict):
-        """VAE extract features --> add noise to feature map --> denoise."""
+        """DINO extract features --> add noise to feature map --> denoise."""
         img = data_dict['img']  # [B, C, H, W]
         # extract feature map
         with torch.no_grad():
-            x0 = self.vae.encode(img).detach()  # [B, C, h, w]
+            x0 = self.dino(img).detach()  # [B, C, h, w]
         t = torch.randint(
             0, self.num_timesteps, (x0.shape[0], ), device=self.device).long()
         context = data_dict[self.cond_stage_key]  # [B, N, D]
@@ -201,7 +197,7 @@ class LDMDINO(CondDDPM):
         log = {}
         img = batch['img']
         # extract feature
-        x = self.vae.encode(img)  # [B, C, h, w]
+        x = self.dino(img)  # [B, C, h, w]
         cond = batch[self.cond_stage_key]
         B = x.shape[0]
 
