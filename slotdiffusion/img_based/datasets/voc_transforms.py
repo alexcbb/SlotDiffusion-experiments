@@ -198,6 +198,7 @@ class VOCTransforms(object):
             Normalize(norm_mean, norm_std),
         ])
         self.resolution = resolution
+        self.normalize = Normalize(norm_mean, norm_std)
 
     def __call__(self, input):
         return self.transforms(input)

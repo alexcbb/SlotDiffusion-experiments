@@ -33,7 +33,7 @@ class SlotBaseMethod(BaseMethod):
         # rescale to [0., 1.]
         dst, dst_name = self.val_loader.dataset, self.params.dataset
         if dst_name in ['coco', 'voc']:
-            norm = dst.__getattribute__(f'{dst_name}_transforms').Normalize # get Normalize class from dataset
+            norm = dst.__getattribute__(f'{dst_name}_transforms').normalize # get Normalize class from dataset
             img = norm.denormalize_image(img)
         else:
             img = to_rgb_from_tensor(img)
