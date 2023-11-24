@@ -40,9 +40,8 @@ def main(params):
         # e.g. on our cluster, the temp dir is /checkpoint/$USR/$SLURM_JOB_ID/
         # TODO: modify this if you are not running on clusters
         SLURM_JOB_ID = os.environ.get('SLURM_JOB_ID')
-        # if SLURM_JOB_ID and not os.path.exists(ckp_path):
-        #     os.system(r'ln -s /checkpoint/{}/{}/ {}'.format(
-        #         pwd.getpwuid(os.getuid())[0], SLURM_JOB_ID, ckp_path))
+        if SLURM_JOB_ID and not os.path.exists(ckp_path):
+            os.makedirs(ckp_path, exist_ok=True)
 
         # it's not good to hard-code the wandb id
         # but on preemption clusters, we want the job to resume the same wandb
