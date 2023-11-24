@@ -31,7 +31,7 @@ def main(params):
 
     # create checkpoint dir
     exp_name = os.path.basename(args.params)
-    ckp_path = os.path.join('checkpoint', exp_name, 'models')
+    ckp_path = os.path.join(args.base_folder, 'checkpoint', exp_name, 'models')
     if args.local_rank == 0:
         mkdir_or_exist(os.path.dirname(ckp_path))
 
@@ -40,9 +40,9 @@ def main(params):
         # e.g. on our cluster, the temp dir is /checkpoint/$USR/$SLURM_JOB_ID/
         # TODO: modify this if you are not running on clusters
         SLURM_JOB_ID = os.environ.get('SLURM_JOB_ID')
-        if SLURM_JOB_ID and not os.path.exists(ckp_path):
-            os.system(r'ln -s /checkpoint/{}/{}/ {}'.format(
-                pwd.getpwuid(os.getuid())[0], SLURM_JOB_ID, ckp_path))
+        # if SLURM_JOB_ID and not os.path.exists(ckp_path):
+        #     os.system(r'ln -s /checkpoint/{}/{}/ {}'.format(
+        #         pwd.getpwuid(os.getuid())[0], SLURM_JOB_ID, ckp_path))
 
         # it's not good to hard-code the wandb id
         # but on preemption clusters, we want the job to resume the same wandb
@@ -60,6 +60,7 @@ def main(params):
             name=logger_name,
             id=logger_id,
             dir=ckp_path,
+            mode="offline"
         )
 
     method = build_method(
@@ -83,6 +84,7 @@ if __name__ == "__main__":
         type=str,
         default='img_based',
         choices=['img_based', 'video_based', 'vp_vqa'])
+    parser.add_argument('--base_folder', type=str, equired=True, default='./')
     parser.add_argument('--params', type=str, required=True)
     parser.add_argument('--weight', type=str, default='', help='load weight')
     parser.add_argument('--fp16', action='store_true', help='half-precision')

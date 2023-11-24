@@ -5,7 +5,7 @@ class SlotAttentionParams(BaseParams):
     project = 'SlotDiffusion'
 
     # training settings
-    gpus = 1
+    gpus = 2
     max_epochs = 100
     save_interval = 0.25
     eval_interval = 4
