@@ -28,4 +28,4 @@ export HYDRA_FULL_ERROR=1
 torchrun --nproc_per_node=2 \
     scripts/train.py --task img_based \
     --params slotdiffusion/img_based/configs/sa_ldm/sa_ldm_dino_coco_params-res224.py \
-    --fp16 --ddp --cudnn --local-rank
+    --fp16 --ddp --cudnn --local_rank
