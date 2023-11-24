@@ -25,7 +25,7 @@ module purge
 module load pytorch-gpu/py3/1.10.1
 
 python -m torch.distributed.launch --nproc_per_node=2 \
-    scripts/train.py --task img_based \
+    scripts/train.py --task img_based 
     --base_folder /gpfswork/rech/uli/ujf38zl/SlotDiffusion-experiments/ \
-    --params slotdiffusion/img_based/configs/sa_ldm/sa_ldm_dino_coco_params-res224.py \
+    --params slotdiffusion/img_based/configs/sa_ldm/sa_ldm_dino_coco_params-res224i-bs32.py \
     --fp16 --ddp --cudnn
