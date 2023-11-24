@@ -3,8 +3,7 @@ from torch import nn
 from torch.nn import functional as F
 
 from .slot_attention import SlotAttention, SA
-from .ddpm import CondDDPM, LDM
-
+from .ddpm import CondDDPM, LDM, LDMDINO
 
 class SlotAttentionWMask(SlotAttention):
     """Slot attention module that iteratively performs cross-attention.
@@ -142,6 +141,8 @@ class SADiffusion(SA):
         # Build Decoder
         # if has a VAE config, then it's LDM
         if self.dec_dict.get('vae_dict', dict()):
+            self.dm_decoder = LDM(**self.dec_dict)
+        elif self.dec_dict.get('dino_dict', dict()):
             self.dm_decoder = LDM(**self.dec_dict)
         # Conditional DDPM
         else:

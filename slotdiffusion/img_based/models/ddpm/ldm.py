@@ -13,6 +13,7 @@ from einops import repeat
 
 from .utils import noise_like
 from .cond_ddpm import CondDDPM
+from slotdiffusion.video_based.models.dino import DINOEncoder
 
 
 class LDM(CondDDPM):
@@ -136,8 +137,12 @@ class LDMDINO(CondDDPM):
     def __init__(
         self,
         resolution,
-        dino_dict,
         unet_dict,
+        dino_dict=dict(
+            resolution=224,
+            patch_size=8,
+            small_size=True
+        ),
         use_ema=True,
         diffusion_dict=dict(
             pred_target='eps',  # 'eps' or 'x0', predict noise or direct x0
@@ -161,7 +166,7 @@ class LDMDINO(CondDDPM):
             cond_stage_key=cond_stage_key,
         )
 
-        self.dino = DINO(**dino_dict)# VQVAEWrapper(**vae_dict)
+        self.dino = DINOEncoder(**dino_dict)# VQVAEWrapper(**vae_dict)
 
         self.clip_denoised = False  # latent features are unbounded values
         self.vq_denoised = True  # LDM uses this by default
@@ -202,8 +207,9 @@ class LDMDINO(CondDDPM):
         B = x.shape[0]
 
         # get diffusion row
+        # We just print features and not images
         if ret_intermed:
-            diffusion_row = [self.vae.decode(x.detach().clone())]
+            diffusion_row = [x.detach().clone()]
             x0 = x
             for t in range(self.num_timesteps):
                 if (t + 1) % self.log_every_t == 0 or \
@@ -212,7 +218,7 @@ class LDMDINO(CondDDPM):
                     t = t.to(self.device).long()
                     noise = noise_like(x0.shape, x0.device)
                     x_noisy = self._sample_xt_from_x0(x0=x0, t=t, noise=noise)
-                    diffusion_row.append(self.vae.decode(x_noisy))
+                    diffusion_row.append(x_noisy)
             diffusion_row = torch.stack(diffusion_row, dim=0)  # [N, B, C, H,W]
             log["diffusion_row"] = self._get_rows_from_list(diffusion_row)
 
@@ -223,13 +229,13 @@ class LDMDINO(CondDDPM):
 
         # decode patch tokens to images
         if isinstance(ret, tuple):
-            log["samples"] = self.vae.decode(ret[0])
+            log["samples"] = ret[0]
             if ret[1] is not None:
                 denoise_row = torch.stack(
-                    [self.vae.decode(feats) for feats in ret[1]], dim=0)
+                    [feats for feats in ret[1]], dim=0)
                 log["denoise_row"] = self._get_rows_from_list(denoise_row)
         else:
-            log["samples"] = self.vae.decode(ret)
+            log["samples"] = ret
 
         return log
 
