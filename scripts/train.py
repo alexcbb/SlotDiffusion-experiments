@@ -84,7 +84,7 @@ if __name__ == "__main__":
         type=str,
         default='img_based',
         choices=['img_based', 'video_based', 'vp_vqa'])
-    parser.add_argument('--base_folder', type=str, equired=True, default='./')
+    parser.add_argument('--base_folder', type=str, required=True, default='./')
     parser.add_argument('--params', type=str, required=True)
     parser.add_argument('--weight', type=str, default='', help='load weight')
     parser.add_argument('--fp16', action='store_true', help='half-precision')
