@@ -143,7 +143,7 @@ class SADiffusion(SA):
         if self.dec_dict.get('vae_dict', dict()):
             self.dm_decoder = LDM(**self.dec_dict)
         elif self.dec_dict.get('dino_dict', dict()):
-            self.dm_decoder = LDM(**self.dec_dict)
+            self.dm_decoder = LDMDINO(**self.dec_dict)
         # Conditional DDPM
         else:
             self.dm_decoder = CondDDPM(**self.dec_dict)
