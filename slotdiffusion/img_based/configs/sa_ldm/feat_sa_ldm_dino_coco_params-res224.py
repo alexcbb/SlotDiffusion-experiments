@@ -89,7 +89,6 @@ class SlotAttentionParams(BaseParams):
         use_ema=False,  # DDPM and LDM do use EMA
         diffusion_dict=dict(
             pred_target='eps',  # 'eps' or 'x0', predict noise or direct x0
-            z_scale_factor=1.,  # 1.05
             timesteps=1000,
             beta_schedule="linear",
             # the one used in LDM
