@@ -21,8 +21,9 @@ echo ${SLURM_NODELIST}
 
 module purge
 
-#module load cpuarch/amd # To be compatible with a100 nodes
-module load pytorch-gpu/py3/1.10.1
+module load cpuarch/amd # To be compatible with a100 nodes
+module load pytorch-gpu/py3/1.11.0
+#module load pytorch-gpu/py3/1.10.1
 
 python -m torch.distributed.launch --nproc_per_node=2 \
     scripts/train.py --task img_based 
