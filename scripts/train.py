@@ -13,10 +13,9 @@ import idr_torch
 from nerv.utils import mkdir_or_exist
 from nerv.training import BaseDataModule
 
-
-torch.cuda.set_device(idr_torch.local_rank)
-
 def main(params):
+
+    torch.cuda.set_device(idr_torch.local_rank)
     # build datamodule
     datasets = build_dataset(params)
     train_set, val_set = datasets[0], datasets[1]
@@ -95,6 +94,8 @@ if __name__ == "__main__":
     parser.add_argument('--local_rank', type=int, default=0)
     parser.add_argument('--local-rank', type=int, default=0)
     args = parser.parse_args()
+    
+    args.local_rank = idr_torch.local_rank
 
     # import `build_dataset/model/method` function according to `args.task`
     print(f'INFO: training model in {args.task} task!')
