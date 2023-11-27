@@ -8,10 +8,13 @@ import argparse
 import wandb
 
 import torch
+import idr_torch 
 
 from nerv.utils import mkdir_or_exist
 from nerv.training import BaseDataModule
 
+
+torch.cuda.set_device(idr_torch.local_rank)
 
 def main(params):
     # build datamodule
@@ -115,5 +118,4 @@ if __name__ == "__main__":
     if args.cudnn:
         torch.backends.cudnn.benchmark = True
         print('INFO: using cudnn benchmark!')
-
     main(params)
