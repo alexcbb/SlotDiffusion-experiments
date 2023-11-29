@@ -25,8 +25,7 @@ module load cpuarch/amd # To be compatible with a100 nodes
 module load pytorch-gpu/py3/1.11.0
 #module load pytorch-gpu/py3/1.10.1
 
-python -m torch.distributed.launch --nproc_per_node=2 \
-    scripts/train.py --task img_based 
+srun python -m scripts/train.py --task img_based 
     --base_folder /gpfswork/rech/uli/ujf38zl/SlotDiffusion-experiments/ \
     --params slotdiffusion/img_based/configs/sa_ldm/sa_ldm_dino_coco_params-res224i-bs32.py \
     --fp16 --ddp --cudnn
