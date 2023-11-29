@@ -10,12 +10,12 @@
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:2
 #SBATCH --ntasks-per-node=2 #number of MPI tasks per node (=number of GPUs per node)
-#SBATCH --cpus-per-task=3
+#SBATCH --cpus-per-task=10
 #SBATCH --hint=nomultithread
-#SBATCH -t 20:00:00
+#SBATCH -t 00:20:00
 #SBATCH --mail-user=alexandre.chapin@ec-lyon.fr
 #SBATCH --mail-typ=FAIL
-#SBATCH --qos=qos_gpu-t3
+#SBATCH --qos=qos_gpu-dev
 
 echo ${SLURM_NODELIST}
 
@@ -25,7 +25,7 @@ module load cpuarch/amd # To be compatible with a100 nodes
 module load pytorch-gpu/py3/1.11.0
 #module load pytorch-gpu/py3/1.10.1
 
-srun python -m scripts/train.py --task img_based 
+python -m torch.distributed.launch scripts/train.py --task img_based \
     --base_folder /gpfswork/rech/uli/ujf38zl/SlotDiffusion-experiments/ \
     --params slotdiffusion/img_based/configs/sa_ldm/sa_ldm_dino_coco_params-res224i-bs32.py \
     --fp16 --ddp --cudnn
